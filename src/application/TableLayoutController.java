@@ -7,6 +7,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Alert.AlertType;
+
+import java.util.Date;
+
 import application.LeatherSkirtModel;
 
 public class TableLayoutController {
@@ -123,6 +126,34 @@ public class TableLayoutController {
 		}
 	}
 
+	Date lastClickTime;
+	LeatherSkirtModel tempModel;
+	/*
+	 * Пользователь дважды щелкнул на ряду в таблице, мы берем эти данные и запускаем EditSkirtsInfoDialog
+	 */
+	@FXML
+	private void handleRowSelect() {
+
+		LeatherSkirtModel selectedModel = leatherSkirtTable.getSelectionModel().getSelectedItem();
+
+		if(selectedModel == null) return;
+		if(selectedModel != tempModel) {
+			tempModel = selectedModel;
+			lastClickTime = new Date();
+
+		} else if(selectedModel == tempModel) {
+			Date now = new Date();
+			long diff = now.getTime() - lastClickTime.getTime();
+			if(diff < 300) {
+				boolean okClicked = main.showEditSkirtsInfoDialog(selectedModel);
+				if(okClicked) {}
+			}
+			else {
+				lastClickTime = new Date();
+			}
+		}
+
+	}
 
 	public void setMain(Main main) {
 		this.main = main;

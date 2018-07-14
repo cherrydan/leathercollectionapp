@@ -21,7 +21,7 @@
             <Label layoutX="209.0" layoutY="40.0" prefHeight="16.0" prefWidth="216.0" text="LEATHER COLLECTION APP" textAlignment="CENTER" />
          </children>
       </AnchorPane>
-      <TableView fx:id="leatherSkirtTable" layoutX="-2.0" layoutY="103.0" prefHeight="251.0" prefWidth="650.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <TableView fx:id="leatherSkirtTable" layoutX="-2.0" layoutY="103.0" onMouseClicked="#handleRowSelect" prefHeight="251.0" prefWidth="650.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <columns>
           <TableColumn fx:id="brandNameColumn" prefWidth="75.0" text="Brand " />
             <TableColumn fx:id="waistLengthColumn" prefWidth="75.0" text="Waist" />

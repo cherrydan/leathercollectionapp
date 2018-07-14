@@ -1,5 +1,12 @@
 package application;
 
+import java.io.File;
+import java.util.prefs.Preferences;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,6 +14,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -77,6 +86,7 @@ public class Main extends Application {
 			//Помещаем дочернюю форму с информацией по центру корневой формы
 			rootLayout.setCenter(skirtsOverview);
 
+			//Связываем контроллер таблицы и главное приложение
 			TableLayoutController controller = loader.getController();
 			controller.setMain(this);
 		}
@@ -106,11 +116,23 @@ public class Main extends Application {
 
 			primaryStage.show();
 
+			RootLayoutController controller = loader.getController();
+
+			controller.setMain(this);
+
+			File file = getSkirtsFilePath();
+			if(file != null) {
+				loadSkirtsDataFromFile(file);
+			}
+
+
 		}
 		catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+
+
 	}
 
 
@@ -157,6 +179,91 @@ public class Main extends Application {
 
 	}
 
+
+	/*
+	 * Возвращает ссылку на последний открытый пользователем файл, сохраненного в Preferences
+	 */
+	public File getSkirtsFilePath() {
+
+		Preferences prefs = Preferences.userNodeForPackage(Main.class);
+		String filePath = prefs.get("filePath", null);
+		if (filePath != null) {
+			return new File(filePath);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/*
+	 * Устанавливает путь в Prefenerces последнего открытого пользователем файла (получая ссылку на файл)
+	 */
+	public void setSkirtsFilePath(File file) {
+		Preferences prefs = Preferences.userNodeForPackage(Main.class);
+		if(file != null) {
+			prefs.put("filePath", file.getPath());
+			primaryStage.setTitle("Leather Skirts App - " + file.getName());
+		}
+		else {
+			prefs.remove("filePath");
+			primaryStage.setTitle("Leather Skirts App");
+		}
+
+	}
+
+	/*
+	 * Загружает данные о юбках из файла и обновляет таблицу
+	 */
+	public void loadSkirtsDataFromFile(File file) {
+		try {
+			JAXBContext context = JAXBContext.newInstance(SkirtsModelWrapper.class);
+			Unmarshaller um = context.createUnmarshaller();
+
+			SkirtsModelWrapper wrapper = (SkirtsModelWrapper) um.unmarshal(file);
+
+			leatherSkirtsData.clear();
+			leatherSkirtsData.addAll(wrapper.getModels());
+
+			setSkirtsFilePath(file);
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			Alert alert = new Alert(AlertType.ERROR);
+	        alert.setTitle("Error");
+	        alert.setHeaderText("Could not load data");
+	        alert.setContentText("Could not load data from file:\n" + file.getPath());
+	        e.printStackTrace();
+	        alert.showAndWait();
+		}
+	}
+
+	/*
+	 * Сохраняет данные о юбках из таблицы в файл
+	 */
+	public void saveSkirtsDataToFile(File file) {
+		try {
+		JAXBContext context = JAXBContext.newInstance(SkirtsModelWrapper.class);
+		Marshaller m = context.createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+		SkirtsModelWrapper wrapper = new SkirtsModelWrapper();
+		wrapper.setModels(leatherSkirtsData);
+
+		m.marshal(wrapper, file);
+
+		setSkirtsFilePath(file);
+
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			Alert alert = new Alert(AlertType.ERROR);
+	        alert.setTitle("Error");
+	        alert.setHeaderText("Could not save data");
+	        alert.setContentText("Could not save data to file:\n" + file.getPath());
+
+	        alert.showAndWait();
+		}
+	}
 
 	public static void main(String[] args) {
 		launch(args);

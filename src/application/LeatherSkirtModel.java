@@ -12,10 +12,7 @@ public class LeatherSkirtModel {
 	private StringProperty notaBene; //Туре оf skirt or another information
 
 	public LeatherSkirtModel() {
-		this.setBrandName("");
-		this.setWaist(0.0);
-		this.setLength(0.0);
-		this.setNotaBene("");
+		this(null,0,0,null);
 	}
 
 	public LeatherSkirtModel(String brandName, double waist, double length, String notaBene) {
