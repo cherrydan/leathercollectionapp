@@ -129,7 +129,10 @@ public class TableLayoutController {
 	Date lastClickTime;
 	LeatherSkirtModel tempModel;
 	/*
-	 * Пользователь дважды щелкнул на ряду в таблице, мы берем эти данные и запускаем EditSkirtsInfoDialog
+	 * Пользователь дважды щелкнул на ряду в таблице, мы берем эти данные из ряда и запускаем EditSkirtsInfoDialog
+	 *
+	 * Человек придумал алгоритм, засечь время между двумя кликами, и если оно меньше 300 миллисекунд, это двойной клик, и
+	 * можно запускать какой-либо процесс по нему
 	 */
 	@FXML
 	private void handleRowSelect() {
